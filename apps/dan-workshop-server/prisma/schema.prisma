@@ -1,0 +1,83 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model JobCard {
+  createdAt   DateTime           @default(now())
+  customer    Customer?          @relation(fields: [customerId], references: [id])
+  customerId  String?
+  description String?
+  id          String             @id @default(cuid())
+  invoices    Invoice[]
+  jobNumber   Int?
+  services    Service[]
+  status      EnumJobCardStatus?
+  updatedAt   DateTime           @updatedAt
+}
+
+model Customer {
+  address   String?
+  createdAt DateTime  @default(now())
+  email     String?
+  id        String    @id @default(cuid())
+  invoices  Invoice[]
+  jobCards  JobCard[]
+  name      String?
+  phone     String?
+  updatedAt DateTime  @updatedAt
+  vehicles  Vehicle[]
+}
+
+model Vehicle {
+  createdAt   DateTime  @default(now())
+  customer    Customer? @relation(fields: [customerId], references: [id])
+  customerId  String?
+  id          String    @id @default(cuid())
+  model       String?
+  plateNumber String?
+  updatedAt   DateTime  @updatedAt
+  year        Int?
+}
+
+model Service {
+  cost        Float?
+  createdAt   DateTime  @default(now())
+  description String?
+  id          String    @id @default(cuid())
+  jobCard     JobCard?  @relation(fields: [jobCardId], references: [id])
+  jobCardId   String?
+  serviceDate DateTime?
+  updatedAt   DateTime  @updatedAt
+}
+
+model Employee {
+  createdAt DateTime @default(now())
+  email     String?
+  id        String   @id @default(cuid())
+  name      String?
+  phone     String?
+  role      String?
+  updatedAt DateTime @updatedAt
+}
+
+model Invoice {
+  amount        Float?
+  createdAt     DateTime  @default(now())
+  customer      Customer? @relation(fields: [customerId], references: [id])
+  customerId    String?
+  date          DateTime?
+  id            String    @id @default(cuid())
+  invoiceNumber Int?
+  jobCard       JobCard?  @relation(fields: [jobCardId], references: [id])
+  jobCardId     String?
+  updatedAt     DateTime  @updatedAt
+}
+
+enum EnumJobCardStatus {
+  Option1
+}
